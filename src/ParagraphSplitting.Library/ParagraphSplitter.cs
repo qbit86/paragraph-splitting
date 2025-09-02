@@ -10,7 +10,7 @@ public static class ParagraphSplitter
     {
         ArgumentNullException.ThrowIfNull(wordWidths);
         ArgumentOutOfRangeException.ThrowIfNegative(spaceWidth);
-        ArgumentOutOfRangeException.ThrowIfNegative(pageWidth);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageWidth);
 
         if (wordWidths.Count is 0)
             return [];
@@ -22,6 +22,27 @@ public static class ParagraphSplitter
     }
 
     private static void SplitParagraph(
-        IReadOnlyList<int> wordWidths, int spaceWidth, int pageWidth, List<int> leadingWordIndices) =>
-        throw new NotImplementedException();
+        IReadOnlyList<int> wordWidths, int spaceWidth, int pageWidth, List<int> leadingWordIndices)
+    {
+        int wordCount = wordWidths.Count;
+        for (int wordIndex = 0; wordIndex < wordCount;)
+        {
+            int leadingWordIndex = wordIndex;
+            leadingWordIndices.Add(leadingWordIndex);
+
+            int currentLineWidth = 0;
+            do
+            {
+                int wordWidth = wordWidths[wordIndex];
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(wordWidth);
+                int widthToAppend = currentLineWidth is 0 ? wordWidth : spaceWidth + wordWidth;
+                int newLineWidth = currentLineWidth + widthToAppend;
+                if (newLineWidth > pageWidth)
+                    break;
+
+                currentLineWidth = newLineWidth;
+                ++wordIndex;
+            } while (wordIndex < wordCount);
+        }
+    }
 }
