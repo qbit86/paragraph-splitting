@@ -6,6 +6,18 @@ namespace ParagraphSplitting;
 
 public static class ParagraphSplitter
 {
+    /// <summary>
+    /// Splits a paragraph into lines by determining the trailing word index for each line.
+    /// </summary>
+    /// <param name="wordWidths">The widths of each word in the paragraph.</param>
+    /// <param name="spaceWidth">The width of a space character.</param>
+    /// <param name="pageWidth">The maximum width allowed for each line.</param>
+    /// <returns>An enumerable of trailing word indices for each line.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="wordWidths" /> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="spaceWidth" /> is negative
+    /// or <paramref name="pageWidth" /> is negative or zero.
+    /// </exception>
     public static IEnumerable<int> SplitParagraph(IReadOnlyList<int> wordWidths, int spaceWidth, int pageWidth)
     {
         ArgumentNullException.ThrowIfNull(wordWidths);
