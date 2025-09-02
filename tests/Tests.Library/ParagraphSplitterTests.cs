@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace ParagraphSplitting;
 
@@ -102,5 +103,53 @@ public class ParagraphSplitterTests
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             ParagraphSplitter.SplitParagraph(wordWidths, 1, 10));
+    }
+
+    [Fact]
+    public void SplitParagraph_SingleWordExceedsPageWidth_HandlesGracefully()
+    {
+        int[] wordWidths = [15]; // Word width (15) > page width (10)
+        var result = ParagraphSplitter.SplitParagraph(wordWidths, 1, 10);
+
+        // Should place oversized word on its own line
+        Assert.Equal([0], result);
+    }
+
+    [Fact]
+    public void SplitParagraph_MultipleOversizedWords_HandlesGracefully()
+    {
+        int[] wordWidths = [12, 15, 8]; // The first two words exceed page width (10)
+        var result = ParagraphSplitter.SplitParagraph(wordWidths, 1, 10);
+
+        // Each oversized word should be on its own line, the last word fits normally
+        Assert.Equal([0, 1, 2], result);
+    }
+
+    [Fact]
+    public void SplitParagraph_ZeroSpaceWidth_WorksCorrectly()
+    {
+        int[] wordWidths = [4, 4, 2]; // With 0 space width: [4,4] [2]
+        var result = ParagraphSplitter.SplitParagraph(wordWidths, 0, 8);
+
+        Assert.Equal([1, 2], result);
+    }
+
+    [Fact]
+    public void SplitParagraph_WordExactlyEqualsPageWidth_WorksCorrectly()
+    {
+        int[] wordWidths = [10]; // Word width exactly equals page width
+        var result = ParagraphSplitter.SplitParagraph(wordWidths, 1, 10);
+
+        Assert.Equal([0], result);
+    }
+
+    [Fact]
+    public void SplitParagraph_LargeNumberOfWords_PerformanceTest()
+    {
+        int[] wordWidths = [.. Enumerable.Repeat(3, 1000)]; // 1000 words of width 3
+        var result = ParagraphSplitter.SplitParagraph(wordWidths, 1, 10);
+
+        // Each line fits 2 words (3+1+3=7 <= 10), so 500 lines expected
+        Assert.Equal(500, result.Count());
     }
 }
