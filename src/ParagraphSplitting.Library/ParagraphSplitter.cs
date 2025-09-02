@@ -49,7 +49,7 @@ public static class ParagraphSplitter
                 ArgumentOutOfRangeException.ThrowIfNegativeOrZero(wordWidth);
                 int widthToAppend = currentLineWidth is 0 ? wordWidth : spaceWidth + wordWidth;
                 int newLineWidth = currentLineWidth + widthToAppend;
-                if (newLineWidth > pageWidth)
+                if (newLineWidth > pageWidth && currentLineWidth > 0)
                     break;
 
                 currentLineWidth = newLineWidth;
